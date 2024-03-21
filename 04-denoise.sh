@@ -5,19 +5,19 @@
 
 ###VARIABLES TO BE SET###
 #Set the path to your directory on scratch - do not include a trailing /
-myDir=
+myDir=/mnt/scratch/sbi9srj/VCB_2024
 #Set your username
-userProject=
+userProject=sbi9srj
 #Path to metadata (mapping) file. See https://docs.qiime2.org/2022.2/tutorials/metadata/
-metadat=
+metadat=${myDir}/metadata.txt
 #Indicate if the data is single-end (SE) or paired-end (PE)
 ends=PE
 #Set the slurm queue to use: defq for gomphus, epyc for iago, htc for hawk
-queue=epyc
+queue=jumbo
 ######
 
 mem="2G"
-cpu="100"
+cpu="50"
 runTime="05:00:00"
 scriptBase="04denoise"
 

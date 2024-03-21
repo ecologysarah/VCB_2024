@@ -5,13 +5,13 @@
 
 ###VARIABLES TO BE SET###
 #Set the path to your directory on scratch - do not include a trailing /
-myDir=
+myDir=/mnt/scratch/sbi9srj/VCB_2024
 #Set your username
-userProject=
+userProject=sbi9srj
 #Path to metadata (mapping) file. See https://docs.qiime2.org/2022.2/tutorials/metadata/
-metadat=
+metadat=${myDir}/metadata.txt
 #Set the slurm queue to use: defq for gomphus, epyc for iago, htc for hawk
-queue=epyc
+queue=mammoth
 ######
 
 mem="2G"
@@ -20,11 +20,11 @@ runTime="01:00:00"
 scriptBase="05taxonomy"
 
 ##Set the correct version of QIIME
-QIIME=$(module avail -L qiime/ | tail -n 1)
+QIIME=$(module avail -L qiime2/ | tail -n 1)
 ##Find version number
 vNO=$(echo ${QIIME} | sed -E 's/.+\/(.+)/\1/')
 ##Append this information to the report
-echo -e "\nTaxonomy assigned with the SILVA database in ${QIIME}" >> ${myDir}/AnalysisReport.txt
+echo -e "\nTaxonomy assigned with the UNITE database (v9) in ${QIIME}" >> ${myDir}/AnalysisReport.txt
 
 ##Make directories for the output
 if [ ! -d "${myDir}/05-taxonomy" ]; then
@@ -47,14 +47,10 @@ echo "#SBATCH --error ${myDir}/ERR/${scriptBase}.%J" >> ${scriptName}
 
 echo "module load ${QIIME}" >> ${scriptName}
 
-##Download the classifier
-echo "curl -sL \\
-  https://data.qiime2.org/${vNO}/common/silva-132-99-515-806-nb-classifier.qza > \\
-  ${myDir}/05-taxonomy/silva-138-99-515-806-nb-classifier.qza" >> ${scriptName}
 
 ##Assign the taxonomy
 echo "qiime feature-classifier classify-sklearn \\
-  --i-classifier ${myDir}/05-taxonomy/silva-138-99-515-806-nb-classifier.qza \\
+  --i-classifier ${myDir}/UNITE_QIIME/UNITEv9dynamic_classifier.qza \\
   --i-reads ${myDir}/04-denoise/representative_sequences.qza \\
   --p-n-jobs ${cpu} \\
   --o-classification ${myDir}/05-taxonomy/taxonomy.qza" >> ${scriptName}

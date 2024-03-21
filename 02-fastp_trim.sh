@@ -5,15 +5,15 @@
 
 ###VARIABLES TO BE SET###
 ##Set the path to your directory on scratch - do not include a trailing /
-myDir=
+myDir=/mnt/scratch/sbi9srj/VCB_2024
 ##Set your username
-userProject=
+userProject=sbi9srj	
 ##Indicate if the data is single-end (SE) or paired-end (PE)
 ends=PE
 ##Indicate if you want to specify an adapter for SE reads (set as "" to omit)
 adapt=""
 ##Set the slurm queue to use: defq for gomphus, epyc for iago, htc for hawk
-queue=epyc
+queue=mammoth
 ######
 
 sampleIDs=$(cat ${myDir}/01-download/SampleFileNames.txt)
@@ -70,9 +70,11 @@ do
         if [ "${ends}" = PE ]; then echo "-I \${LOCATION}/${sampleID}R2\${FILEND} \\" >> ${scriptName}; fi
         echo "-o ${myDir}/02-trim/trim_${sampleID}_R1\${FILEND} \\" >> ${scriptName}
         if [ "${ends}" = PE ]; then echo "-O ${myDir}/02-trim/trim_${sampleID}_R2\${FILEND} \\" >> ${scriptName}; fi
-	##Set the minimum phred score to 20
-	echo -e "-q 20
-	" >> ${scriptName}
+	##Set the minimum phred score to 20, with no more than 10% bases allowed to drop below that
+	echo "-q 20 \\
+	-u 10 \\" >> ${scriptName}
+	## Enable sliding window trim
+	echo "--cut_right" >> ${scriptName}
 
         ## make the script into an 'executable'
         chmod u+x ${scriptName}
